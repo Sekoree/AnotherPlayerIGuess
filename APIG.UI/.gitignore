@@ -452,3 +452,12 @@ $RECYCLE.BIN/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+##
+## The BASS dlls
+##
+bass.dll
+bass_aac.dll
+basshls.dll
+bassopus.dll
+basswebm.dll

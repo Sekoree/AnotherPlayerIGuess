@@ -11,3 +11,12 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+##
+## The BASS dlls
+##
+bass.dll
+bass_aac.dll
+basshls.dll
+bassopus.dll
+basswebm.dll
