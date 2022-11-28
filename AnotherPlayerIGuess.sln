@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIG.UI", "APIG.UI\APIG.UI.csproj", "{78D8FB83-DA0F-4BAF-BAEF-A810E19704D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeExplode", "..\YoutubeExplode\YoutubeExplode\YoutubeExplode.csproj", "{9613016B-7105-4AC0-BA3B-5F54F410EBC5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78D8FB83-DA0F-4BAF-BAEF-A810E19704D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78D8FB83-DA0F-4BAF-BAEF-A810E19704D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78D8FB83-DA0F-4BAF-BAEF-A810E19704D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78D8FB83-DA0F-4BAF-BAEF-A810E19704D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9613016B-7105-4AC0-BA3B-5F54F410EBC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9613016B-7105-4AC0-BA3B-5F54F410EBC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9613016B-7105-4AC0-BA3B-5F54F410EBC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9613016B-7105-4AC0-BA3B-5F54F410EBC5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

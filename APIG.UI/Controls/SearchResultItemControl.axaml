@@ -1,0 +1,112 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:APIG.UI.Controls"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        x:CompileBindings="True">
+    <Design.PreviewWith>
+        <controls:SearchResultItemControl />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|SearchResultItemControl">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="60, *, Auto, Auto, Auto, Auto, Auto"
+                      RowDefinitions="Auto, Auto">
+                    
+                    <Image Grid.Column="0"
+                           Grid.Row="0"
+                           Grid.RowSpan="2"
+                           asyncImageLoader:ImageLoader.Source="{TemplateBinding AlbumArtUri}"/>
+                    
+                    <TextBlock Grid.Column="1"
+                               Grid.Row="0"
+                               Margin="5,0,0,0"
+                               Text="{TemplateBinding Title}"
+                               TextTrimming="CharacterEllipsis"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               FontWeight="Bold"/>
+                    
+                    <TextBlock Grid.Column="1"
+                                 Grid.Row="1"
+                                 Margin="5,0,0,0"
+                                 Text="{TemplateBinding Artist}"
+                                 TextTrimming="CharacterEllipsis"
+                                 VerticalAlignment="Center"
+                                 FontSize="14"/>
+                    
+                    <TextBlock Grid.Column="2"
+                               Grid.Row="0"
+                               Grid.RowSpan="2"
+                               Margin="5"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Text="{TemplateBinding DurationString}"/>
+                    
+                    <Button Grid.Column="3"
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Center"
+                            Command="{TemplateBinding OpenExternalLinkCommand}"
+                            ToolTip.Tip="Open in browser"
+                            Background="#222266">
+                        <Svg Path="avares://APIG.UI/Assets/openExt.svg"
+                             Height="25"
+                             Stretch="Uniform" />
+                    </Button>
+                    
+                    <Button Grid.Column="4"
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            IsEnabled="{TemplateBinding IsNotInPlaylist}"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Center"
+                            Command="{TemplateBinding AddToPlaylistCommand}"
+                            ToolTip.Tip="Add to main playlist"
+                            Background="#442266">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="5">
+                            <Svg Path="avares://APIG.UI/Assets/addplaylist.svg"
+                                 Height="25"
+                                 Stretch="Uniform"
+                                 VerticalAlignment="Center"/>
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Playlist"/>
+                        </StackPanel>
+                    </Button>
+                    
+                    <Button Grid.Column="5"
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            IsEnabled="{TemplateBinding IsNotInRequests}"
+                            Margin="0,5"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Center"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Center"
+                            Command="{TemplateBinding AddToRequestQueueCommand}"
+                            ToolTip.Tip="Add to requests list (basically play next)"
+                            Background="#772255">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="5">
+                            <Svg Path="avares://APIG.UI/Assets/addplaylist.svg"
+                                 Height="25"
+                                 Stretch="Uniform"
+                                 VerticalAlignment="Center"/>
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="Requests"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

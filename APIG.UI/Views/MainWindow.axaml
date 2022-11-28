@@ -1,0 +1,237 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:APIG.UI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:APIG.UI.Controls"
+        xmlns:models="clr-namespace:APIG.UI.Models"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="550"
+        x:Class="APIG.UI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="APIG.UI"
+        Background="#24280998"
+        SystemDecorations="Full"
+        ExtendClientAreaChromeHints="PreferSystemChrome"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="30">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="250, Auto, *"
+          RowDefinitions="30, *">
+
+        <Rectangle Grid.Column="0"
+                   Grid.ColumnSpan="3"
+                   Grid.Row="0"
+                   IsHitTestVisible="False"
+                   Fill="#99000000"/>
+        
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Margin="10,0,0,0"
+                   VerticalAlignment="Center"
+                   Text="Some Player Idk"/>
+        
+        <Border Grid.Column="0"
+                Grid.Row="1"
+                Margin="5,5,5,5"
+                CornerRadius="10"
+                Background="#24280998"
+                BorderBrush="#88280998"
+                BorderThickness="2">
+            <Grid RowDefinitions="Auto, *, Auto">
+                <controls:MediaInfoControl Grid.Row="0"
+                                           Name="ActiveMediaInfo"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Stretch"
+                                           Margin="10"
+                                           CurrentPosition="{Binding CurrentPosition, Mode=TwoWay}"
+                                           CurrentMedia="{Binding CurrentMedia, Mode=TwoWay}"
+                                           IsPlaying="{Binding IsPlaying, Mode=TwoWay}"/>
+
+
+                <controls:MediaControlsControl Grid.Row="1"
+                                               Margin="10"
+                                               IsPlaying="{Binding IsPlaying}"
+                                               IsShuffle="{Binding IsShuffle, Mode=TwoWay}"
+                                               SaveToFile="{Binding SaveToFile, Mode=TwoWay}"
+                                               Volume="{Binding Volume, Mode=TwoWay}"
+                                               PlayCommand="{Binding PlayCommand}"
+                                               PauseCommand="{Binding PauseCommand}"
+                                               StopCommand="{Binding StopCommand}"
+                                               FastForwardCommand="{Binding NextCommand}"
+                                               RewindCommand="{Binding PreviousCommand}" />
+                
+                <ScrollViewer Grid.Row="2">
+                    <TextBlock TextWrapping="Wrap"
+                               Text="{Binding ErrorLog}"/> 
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+
+        <GridSplitter Grid.Column="1"
+                      Grid.Row="1"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      CornerRadius="5"
+                      BorderBrush="#88ffffff"
+                      BorderThickness="1"
+                      Background="#44ffffff"
+                      Height="100" />
+
+        <TabControl Grid.Column="2"
+                    Grid.Row="1"
+                    Padding="0"
+                    Margin="5,10,5,5">
+            <TabControl.Items>
+                <TabItem Header="Playlist">
+                    <TabItem.Content>
+                        <Grid RowDefinitions="Auto, *">
+
+                            <Grid Grid.Row="0"
+                                  ColumnDefinitions="*, Auto, Auto">
+                                <TextBox Grid.Column="0"
+                                         Watermark="YouTube Video or Playlist URL"
+                                         KeyDown="Playlist_TextBox_OnKeyDown"
+                                         Text="{Binding AddTrackOrPlaylistUri}" />
+                                <Button Grid.Column="1"
+                                        Margin="5,0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Center"
+                                        Content="Add"
+                                        Command="{Binding AddVideoToPlaylistAsync}" />
+                                <CheckBox Grid.Column="2"
+                                          Margin="5,0"
+                                          IsChecked="{Binding EntirePlaylist}"
+                                          Content="Use Entire Playlist?"
+                                          ToolTip.Tip="Use the entire playlist if you enter a URL that contains a Video and Playlist ID" />
+                            </Grid>
+
+                            <ScrollViewer Grid.Row="1"
+                                          Margin="0,5,0,0">
+                                <ItemsRepeater Name="PlaylistBox"
+                                               Margin="0,0,10,0"
+                                               Items="{Binding PlaylistTracks}">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate DataType="models:IBaseTrack">
+                                            <controls:PlaylistItemControl Media="{Binding .}"
+                                                                          MediaParentCollection="{Binding #PlaylistBox.Items}"
+                                                                          ActiveMedia="{Binding #ActiveMediaInfo.CurrentMedia}" />
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical"
+                                                     Spacing="5"></StackLayout>
+                                    </ItemsRepeater.Layout>
+                                </ItemsRepeater>
+                            </ScrollViewer>
+
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+
+                <TabItem Header="Requests">
+                    <TabItem.Content>
+                        <Grid RowDefinitions="Auto, *">
+
+                            <Grid Grid.Row="0"
+                                  ColumnDefinitions="*, Auto">
+                                <TextBox Grid.Column="0"
+                                         Watermark="YouTube Video URL"
+                                         KeyDown="Requests_TextBox_OnKeyDown"
+                                         Text="{Binding AddRequestSong}" />
+                                <Button Grid.Column="1"
+                                        Margin="5,0,0,0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Center"
+                                        Content="Add"
+                                        Command="{Binding AddRequestVideoAsync}" />
+                            </Grid>
+
+                            <ScrollViewer Grid.Row="1"
+                                          Margin="0,5,0,0">
+                                <ItemsRepeater Name="RequestBox"
+                                               Margin="0,0,10,0"
+                                               Items="{Binding RequestTracks}">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate DataType="models:IBaseTrack">
+                                            <controls:PlaylistItemControl Media="{Binding .}"
+                                                                          MediaParentCollection="{Binding $parent[ListBox].Items}"
+                                                                          ActiveMedia="{Binding #ActiveMediaInfo.CurrentMedia}" />
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical"
+                                                     Spacing="5"></StackLayout>
+                                    </ItemsRepeater.Layout>
+                                </ItemsRepeater>
+                            </ScrollViewer>
+
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+
+                <TabItem Header="Search">
+                    <TabItem.Content>
+                        <Grid RowDefinitions="Auto, *">
+
+                            <Grid Grid.Row="0"
+                                  ColumnDefinitions="*, Auto">
+                                <TextBox Grid.Column="0"
+                                         Watermark="Searchterm"
+                                         KeyDown="Search_TextBox_OnKeyDown"
+                                         Text="{Binding SearchQuery}" />
+                                <Button Grid.Column="1"
+                                        Margin="5,0,0,0"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Center"
+                                        Content="Search"
+                                        Command="{Binding SearchForTracksAsync}" />
+                            </Grid>
+
+                            <ScrollViewer Grid.Row="1"
+                                          Margin="0,5,0,0">
+                                <ItemsRepeater Items="{Binding SearchTracks}"
+                                               Margin="0,0,10,0">
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate DataType="models:IBaseTrack">
+                                            <controls:SearchResultItemControl Media="{Binding .}"
+                                                                              Playlist="{Binding #PlaylistBox.Items}"
+                                                                              Requests="{Binding #RequestBox.Items}" />
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Orientation="Vertical"
+                                                     Spacing="5"></StackLayout>
+                                    </ItemsRepeater.Layout>
+                                </ItemsRepeater>
+                            </ScrollViewer>
+
+                        </Grid>
+                    </TabItem.Content>
+                </TabItem>
+
+                <TabItem Header="Visualizer">
+                    <TabItem.Content>
+                        <controls:VisualizerControl Margin="10"
+                                                    CurrentFFTs="{Binding CurrentFFTs}"
+                                                    CurrentMax="{Binding CurrentMaxFFT}"/>
+                    </TabItem.Content>
+                </TabItem>
+            </TabControl.Items>
+        </TabControl>
+
+    </Grid>
+
+</Window>

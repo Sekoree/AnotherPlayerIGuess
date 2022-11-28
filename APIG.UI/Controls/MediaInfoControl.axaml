@@ -1,0 +1,68 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:APIG.UI.Controls"
+        xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
+        x:CompileBindings="True">
+    <Design.PreviewWith>
+        <controls:MediaInfoControl Width="200"/>
+    </Design.PreviewWith>
+
+    <Style Selector="controls|MediaInfoControl">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <!-- Spinning Disk, Title, Artist, Progress, ProgressText -->
+                <Grid RowDefinitions="200, 60, 40, Auto, Auto">
+                    
+                    <Image Grid.Row="0"
+                             Margin="10"
+                             VerticalAlignment="Stretch"
+                             asyncImageLoader:ImageLoader.Source="{TemplateBinding AlbumArtUri}"/>
+                    
+                    <TextBlock Grid.Row="1"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontWeight="Bold"
+                               FontSize="16"
+                               Foreground="White"
+                               MaxLines="2"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               TextTrimming="CharacterEllipsis"
+                               Text="{TemplateBinding Title}"
+                               ToolTip.Tip="{TemplateBinding Title}"/>
+                    <TextBlock Grid.Row="2"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               FontSize="14"
+                               TextAlignment="Center"
+                               TextTrimming="CharacterEllipsis"
+                               Text="{TemplateBinding Artist}"
+                               ToolTip.Tip="{TemplateBinding Artist}"/>
+                    
+                    <ProgressBar Grid.Row="3"
+                                 Height="10"
+                                 Minimum="0"
+                                 SmallChange="0.001"
+                                 LargeChange="0.01"
+                                 Maximum="{TemplateBinding DurationSeconds}"
+                                 Value="{TemplateBinding CurrentPositionSeconds}"/>
+                    
+                    <TextBlock Grid.Row="4"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               TextAlignment="Center"
+                               Text="{TemplateBinding CurrentPositionString}"/>
+                    
+                    <TextBlock Grid.Row="4"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               TextAlignment="Center"
+                               Text="{TemplateBinding DurationString}"/>
+                    
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
