@@ -3,3 +3,9 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+
+bass.dll
+bass_aac.dll
+basshls.dll
+bassopus.dll
+basswebm.dll
