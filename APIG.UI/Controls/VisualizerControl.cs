@@ -38,6 +38,8 @@ public class VisualizerControl : Control
 
     public override void Render(DrawingContext context)
     {
+        if (!IsVisible)
+            return;
         //draw all ffts respectively to the max and the bounds using StreamGeometry, with rounded corners
         var fftsToUse = CurrentFFTs;
         var maxToUse = CurrentMax;

@@ -88,7 +88,14 @@
                              Height="25"
                              Stretch="Uniform" />
                     </Button>
-
+                    <Grid.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Copy URL"
+                                      Command="{TemplateBinding CopyUrlCommand}"/>
+                            <MenuItem Header="Open in Browser"
+                                      Command="{TemplateBinding OpenInBrowserCommand}"/>
+                        </MenuFlyout>
+                    </Grid.ContextFlyout>
                 </Grid>
             </ControlTemplate>
         </Setter>

@@ -9,7 +9,7 @@
         x:Class="APIG.UI.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         x:CompileBindings="True"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/apig.ico"
         Title="APIG.UI"
         Background="#24280998"
         SystemDecorations="Full"

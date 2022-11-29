@@ -4,7 +4,7 @@
         xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
         x:CompileBindings="True">
     <Design.PreviewWith>
-        <controls:MediaInfoControl Width="200"/>
+        <controls:MediaInfoControl Width="200" />
     </Design.PreviewWith>
 
     <Style Selector="controls|MediaInfoControl">
@@ -13,12 +13,13 @@
             <ControlTemplate>
                 <!-- Spinning Disk, Title, Artist, Progress, ProgressText -->
                 <Grid RowDefinitions="200, 60, 40, Auto, Auto">
-                    
+
                     <Image Grid.Row="0"
-                             Margin="10"
-                             VerticalAlignment="Stretch"
-                             asyncImageLoader:ImageLoader.Source="{TemplateBinding AlbumArtUri}"/>
-                    
+                           Margin="10"
+                           VerticalAlignment="Stretch"
+                           asyncImageLoader:ImageLoader.Source="{TemplateBinding AlbumArtUri}">
+                    </Image>
+
                     <TextBlock Grid.Row="1"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
@@ -30,7 +31,7 @@
                                TextAlignment="Center"
                                TextTrimming="CharacterEllipsis"
                                Text="{TemplateBinding Title}"
-                               ToolTip.Tip="{TemplateBinding Title}"/>
+                               ToolTip.Tip="{TemplateBinding Title}" />
                     <TextBlock Grid.Row="2"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
@@ -39,28 +40,35 @@
                                TextAlignment="Center"
                                TextTrimming="CharacterEllipsis"
                                Text="{TemplateBinding Artist}"
-                               ToolTip.Tip="{TemplateBinding Artist}"/>
-                    
+                               ToolTip.Tip="{TemplateBinding Artist}" />
+
                     <ProgressBar Grid.Row="3"
                                  Height="10"
                                  Minimum="0"
                                  SmallChange="0.001"
                                  LargeChange="0.01"
                                  Maximum="{TemplateBinding DurationSeconds}"
-                                 Value="{TemplateBinding CurrentPositionSeconds}"/>
-                    
+                                 Value="{TemplateBinding CurrentPositionSeconds}" />
+
                     <TextBlock Grid.Row="4"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                TextAlignment="Center"
-                               Text="{TemplateBinding CurrentPositionString}"/>
-                    
+                               Text="{TemplateBinding CurrentPositionString}" />
+
                     <TextBlock Grid.Row="4"
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center"
                                TextAlignment="Center"
-                               Text="{TemplateBinding DurationString}"/>
-                    
+                               Text="{TemplateBinding DurationString}" />
+                    <Grid.ContextFlyout>
+                        <MenuFlyout>
+                            <MenuItem Header="Copy URL"
+                                      Command="{TemplateBinding CopyUrlCommand}"/>
+                            <MenuItem Header="Open in Browser"
+                                      Command="{TemplateBinding OpenInBrowserCommand}"/>
+                        </MenuFlyout>
+                    </Grid.ContextFlyout>
                 </Grid>
             </ControlTemplate>
         </Setter>

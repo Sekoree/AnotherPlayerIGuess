@@ -6,6 +6,7 @@ using System.Windows.Input;
 using APIG.UI.Models;
 using Avalonia;
 using Avalonia.Controls.Primitives;
+using Avalonia.Threading;
 using ReactiveUI;
 using YoutubeExplode.Videos;
 
@@ -146,6 +147,30 @@ public class SearchResultItemControl : TemplatedControl
             nameof(IsNotInRequests), o => o.IsNotInRequests);
 
     public bool IsNotInRequests => !IsInRequests;
+    
+    private ICommand? _openInBrowserCommand;
+
+    public static readonly DirectProperty<SearchResultItemControl, ICommand?> OpenInBrowserCommandProperty =
+        AvaloniaProperty.RegisterDirect<SearchResultItemControl, ICommand?>(
+            nameof(OpenInBrowserCommand), o => o.OpenInBrowserCommand, (o, v) => o.OpenInBrowserCommand = v);
+
+    public ICommand? OpenInBrowserCommand
+    {
+        get => _openInBrowserCommand;
+        set => SetAndRaise(OpenInBrowserCommandProperty, ref _openInBrowserCommand, value);
+    }
+
+    private ICommand? _copyUrlCommand;
+
+    public static readonly DirectProperty<SearchResultItemControl, ICommand?> CopyUrlCommandProperty =
+        AvaloniaProperty.RegisterDirect<SearchResultItemControl, ICommand?>(
+            nameof(CopyUrlCommand), o => o.CopyUrlCommand, (o, v) => o.CopyUrlCommand = v);
+
+    public ICommand? CopyUrlCommand
+    {
+        get => _copyUrlCommand;
+        set => SetAndRaise(CopyUrlCommandProperty, ref _copyUrlCommand, value);
+    }
 
     public SearchResultItemControl()
     {
@@ -212,6 +237,24 @@ public class SearchResultItemControl : TemplatedControl
         {
             if (Media is not null)
                 Requests.Add(new YouTubeTrack(Media));
+        });
+        
+        OpenInBrowserCommand = ReactiveCommand.Create(() =>
+        {
+            if (Media is null)
+                return;
+            Process.Start(new ProcessStartInfo(Media.Source.ToString())
+            {
+                UseShellExecute = true
+            });
+        });
+
+        CopyUrlCommand = ReactiveCommand.Create(() =>
+        {
+            if (Media is null)
+                return;
+            Dispatcher.UIThread.InvokeAsync(async () =>
+                await Application.Current!.Clipboard!.SetTextAsync(Media.Source.ToString()));
         });
     }
 }

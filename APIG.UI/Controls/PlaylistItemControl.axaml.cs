@@ -122,6 +122,30 @@ public class PlaylistItemControl : TemplatedControl
         get => _removeMediaCommand;
         set => SetAndRaise(RemoveMediaCommandProperty, ref _removeMediaCommand, value);
     }
+    
+    private ICommand? _openInBrowserCommand;
+
+    public static readonly DirectProperty<PlaylistItemControl, ICommand?> OpenInBrowserCommandProperty =
+        AvaloniaProperty.RegisterDirect<PlaylistItemControl, ICommand?>(
+            nameof(OpenInBrowserCommand), o => o.OpenInBrowserCommand, (o, v) => o.OpenInBrowserCommand = v);
+
+    public ICommand? OpenInBrowserCommand
+    {
+        get => _openInBrowserCommand;
+        set => SetAndRaise(OpenInBrowserCommandProperty, ref _openInBrowserCommand, value);
+    }
+
+    private ICommand? _copyUrlCommand;
+
+    public static readonly DirectProperty<PlaylistItemControl, ICommand?> CopyUrlCommandProperty =
+        AvaloniaProperty.RegisterDirect<PlaylistItemControl, ICommand?>(
+            nameof(CopyUrlCommand), o => o.CopyUrlCommand, (o, v) => o.CopyUrlCommand = v);
+
+    public ICommand? CopyUrlCommand
+    {
+        get => _copyUrlCommand;
+        set => SetAndRaise(CopyUrlCommandProperty, ref _copyUrlCommand, value);
+    }
 
     public PlaylistItemControl()
     {
@@ -150,6 +174,24 @@ public class PlaylistItemControl : TemplatedControl
         {
             if (Media is not null)
                 MediaParentCollection.Remove(Media);
+        });
+        
+        OpenInBrowserCommand = ReactiveCommand.Create(() =>
+        {
+            if (Media is null)
+                return;
+            Process.Start(new ProcessStartInfo(Media.Source.ToString())
+            {
+                UseShellExecute = true
+            });
+        });
+
+        CopyUrlCommand = ReactiveCommand.Create(() =>
+        {
+            if (Media is null)
+                return;
+            Dispatcher.UIThread.InvokeAsync(async () =>
+                await Application.Current!.Clipboard!.SetTextAsync(Media.Source.ToString()));
         });
         
         this.IsHitTestVisible = true;

@@ -138,44 +138,7 @@ public class MediaPlayer
             PlayerErrored?.Invoke(this,
                 new PlayerErroredEventArgs(Bass.LastError, "Could not set sync"));
         //Set DSP to get position
-        var couldDsp = Bass.ChannelSetDSP(_streamHandle, (_, channel, _, _, _) =>
-        {
-            var position = Bass.ChannelBytes2Seconds(channel, Bass.ChannelGetPosition(channel));
-            TrackPositionChanged?.Invoke(this, new TrackPositionChangedEventArgs(TimeSpan.FromSeconds(position)));
-
-            var ffts = new float[8192];
-            var length = Bass.ChannelGetData(channel, ffts, (int)DataFlags.FFT16384);
-            if (length == -1)
-                return;
-            
-            //only use hearable frequencies/ first half of ffts
-            var half = ffts.Length / 2;
-            var hearableFfts = ffts[..half];
-            
-            //decrease last max ffts by 10%
-            for (var i = 0; i < _currentMaxFfts.Length; i++)
-                _currentMaxFfts[i] *= 0.9999999f;
-            
-            //set max ffts
-            for (var i = 0; i < hearableFfts.Length; i++)
-            {
-                if (hearableFfts[i] > _currentMaxFfts[i])
-                    _currentMaxFfts[i] = ffts[i];
-            }
-            
-            //var smoothedFfts = SmoothBands(hearableFfts, 0, 0);
-            
-            //average with last ffts * 0.8
-            for (var i = 0; i < hearableFfts.Length; i++)
-            {
-                hearableFfts[i] = ((_lastFfts[i] * 0.8f) + hearableFfts[i]) / 2;
-            }
-            
-            //set last ffts
-            _lastFfts = hearableFfts;
-
-            TrackFftsRendered?.Invoke(this, new TrackFftsRenderedEventArgs(hearableFfts, _currentMaxFfts));
-        }, IntPtr.Zero, 0);
+        var couldDsp = Bass.ChannelSetDSP(_streamHandle, DspProcedure, IntPtr.Zero, 0);
         if (couldDsp == 0)
             PlayerErrored?.Invoke(this,
                 new PlayerErroredEventArgs(Bass.LastError, "Could not set DSP"));
@@ -188,6 +151,42 @@ public class MediaPlayer
             return;
         }
         TrackStarted?.Invoke(this, new TrackStartedEventArgs(_currentTrack));
+    }
+
+    private void DspProcedure(int handle, int channel, nint buffer, int length, nint user)
+    {
+        var position = Bass.ChannelBytes2Seconds(channel, Bass.ChannelGetPosition(channel));
+        TrackPositionChanged?.Invoke(this, new TrackPositionChangedEventArgs(TimeSpan.FromSeconds(position)));
+
+        var ffts = new float[8192];
+        var dataLength = Bass.ChannelGetData(channel, ffts, (int)DataFlags.FFT16384);
+        if (dataLength == -1) return;
+
+        //only use hearable frequencies/ first half of ffts
+        var half = ffts.Length / 2;
+        var hearableFfts = ffts[..half];
+
+        //decrease last max ffts by 10%
+        for (var i = 0; i < _currentMaxFfts.Length; i++) _currentMaxFfts[i] *= 0.9999999f;
+
+        //set max ffts
+        for (var i = 0; i < hearableFfts.Length; i++)
+        {
+            if (hearableFfts[i] > _currentMaxFfts[i]) _currentMaxFfts[i] = ffts[i];
+        }
+
+        //var smoothedFfts = SmoothBands(hearableFfts, 0, 0);
+
+        //average with last ffts * 0.8
+        for (var i = 0; i < hearableFfts.Length; i++)
+        {
+            hearableFfts[i] = ((_lastFfts[i] * 0.8f) + hearableFfts[i]) / 2;
+        }
+
+        //set last ffts
+        _lastFfts = hearableFfts;
+
+        TrackFftsRendered?.Invoke(this, new TrackFftsRenderedEventArgs(hearableFfts, _currentMaxFfts));
     }
 
     public void Pause()
