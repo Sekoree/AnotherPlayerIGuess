@@ -6,10 +6,13 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <LangVersion>default</LangVersion>
-        <PublishAot>true</PublishAot>
-        <ApplicationIcon>Assets\apig.ico</ApplicationIcon>
+        <PublishAot Condition="'$(Configuration)' == 'Native'">true</PublishAot>
         <Configurations>Debug;Release;Native</Configurations>
         <Platforms>AnyCPU</Platforms>
+        <ApplicationIcon>Assets\apig2.ico</ApplicationIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Native' ">
+      <Optimize>true</Optimize>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,16 +22,16 @@
         <None Update="bass.dll">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="bassopus.dll">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="basswebm.dll">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Update="bass_aac.dll">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="basshls.dll">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="bassopus.dll">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="basswebm.dll">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
@@ -38,21 +41,44 @@
     </ItemGroup>
 
     <ItemGroup>
+        <RdXmlFile Include="rd.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="AsyncImageLoader.Avalonia" Version="3.0.0-avalonia11-preview2" />
         <PackageReference Include="Avalonia" Version="11.0.0-preview4" />
         <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview4" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-preview4" />
         <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0-preview4" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
         <PackageReference Include="ManagedBass" Version="3.1.1" />
-        <PackageReference Include="ReactiveUI.Fody" Version="18.4.1" />
+        <PackageReference Include="TwitchLib" Version="3.5.3" />
         <PackageReference Include="XamlNameReferenceGenerator" Version="1.4.2" />
     </ItemGroup>
 
     <ItemGroup>
-        <RdXmlFile Include="rd.xml" />
+      <Compile Update="Controls\MediaControlsControl.axaml.cs">
+        <DependentUpon>MediaControlsControl.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\MediaInfoControl.axaml.cs">
+        <DependentUpon>MediaInfoControl.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\PlaylistItemControl.axaml.cs">
+        <DependentUpon>PlaylistItemControl.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\SearchResultItemControl.axaml.cs">
+        <DependentUpon>SearchResultItemControl.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <RdXmlFile Include="rd.xml" />
     </ItemGroup>
 
     <ItemGroup>

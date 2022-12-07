@@ -4,12 +4,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using APIG.UI.EventArgs;
 using APIG.UI.Models;
+using APIG.UI.ViewModels;
+using Avalonia.Threading;
 using ManagedBass;
 
 namespace APIG.UI;
 
 public class MediaPlayer
 {
+    private readonly MainWindowViewModel _vm;
     private readonly string[] pluginsToLoad = { "bass_aac", "basshls", "bassopus", "basswebm" };
 
     public event EventHandler<PlayerErroredEventArgs>? PlayerErrored;
@@ -51,10 +54,12 @@ public class MediaPlayer
 
     public PlaybackState? PlaybackState => _streamHandle == -1 ? null : Bass.ChannelIsActive(_streamHandle);
 
-    public MediaPlayer()
-    {
-    }
 
+    public MediaPlayer(MainWindowViewModel vm)
+    {
+        _vm = vm;
+    }
+    
     public void Init()
     {
         var couldInit = Bass.Init();
@@ -96,7 +101,7 @@ public class MediaPlayer
             //Path.ToString and try to create a stream from URL, with StreamDownloadBlocks and Float flags
             _streamHandle =
                 Bass.CreateStream(path.ToString(), 0, BassFlags.StreamDownloadBlocks | BassFlags.Float, null);
-            
+
             if (_streamHandle == 0)
             {
                 TrackLoadErrored?.Invoke(this,
@@ -104,6 +109,7 @@ public class MediaPlayer
                         new Exception("Could not create stream, Bass error: " + Bass.LastError)));
                 return false;
             }
+
             _currentTrack = track;
 
             TrackLoaded?.Invoke(this, new TrackLoadedEventArgs(track));
@@ -138,10 +144,16 @@ public class MediaPlayer
             PlayerErrored?.Invoke(this,
                 new PlayerErroredEventArgs(Bass.LastError, "Could not set sync"));
         //Set DSP to get position
-        var couldDsp = Bass.ChannelSetDSP(_streamHandle, DspProcedure, IntPtr.Zero, 0);
-        if (couldDsp == 0)
+        var posDsp = Bass.ChannelSetDSP(_streamHandle, PositionDspProcedure, IntPtr.Zero, 0);
+        if (posDsp == 0)
             PlayerErrored?.Invoke(this,
-                new PlayerErroredEventArgs(Bass.LastError, "Could not set DSP"));
+                new PlayerErroredEventArgs(Bass.LastError, "Could not set Position DSP"));
+        
+        var fftDsp = Bass.ChannelSetDSP(_streamHandle, FftDspProcedure, IntPtr.Zero, 1);
+        if (fftDsp == 0)
+            PlayerErrored?.Invoke(this,
+                new PlayerErroredEventArgs(Bass.LastError, "Could not set FFT DSP"));
+        
         //Play stream
         var couldPlay = Bass.ChannelPlay(_streamHandle);
         if (!couldPlay)
@@ -150,43 +162,38 @@ public class MediaPlayer
                 new PlayerErroredEventArgs(Bass.LastError, "Could not play, Bass error: " + Bass.LastError));
             return;
         }
+
         TrackStarted?.Invoke(this, new TrackStartedEventArgs(_currentTrack));
     }
 
-    private void DspProcedure(int handle, int channel, nint buffer, int length, nint user)
+    private void PositionDspProcedure(int handle, int channel, nint buffer, int length, nint user)
     {
         var position = Bass.ChannelBytes2Seconds(channel, Bass.ChannelGetPosition(channel));
         TrackPositionChanged?.Invoke(this, new TrackPositionChangedEventArgs(TimeSpan.FromSeconds(position)));
+    }
 
+    private void FftDspProcedure(int handle, int channel, nint buffer, int length, nint user)
+    {
         var ffts = new float[8192];
         var dataLength = Bass.ChannelGetData(channel, ffts, (int)DataFlags.FFT16384);
-        if (dataLength == -1) return;
+        if (dataLength == -1)
+            return;
 
-        //only use hearable frequencies/ first half of ffts
-        var half = ffts.Length / 2;
-        var hearableFfts = ffts[..half];
+        var halfFfts = ffts[..4096];
 
         //decrease last max ffts by 10%
-        for (var i = 0; i < _currentMaxFfts.Length; i++) _currentMaxFfts[i] *= 0.9999999f;
-
-        //set max ffts
-        for (var i = 0; i < hearableFfts.Length; i++)
+        Parallel.For(0, halfFfts.Length, i =>
         {
-            if (hearableFfts[i] > _currentMaxFfts[i]) _currentMaxFfts[i] = ffts[i];
-        }
+            _currentMaxFfts[i] *= 0.999999f;
+            _currentMaxFfts[i] = Math.Max(_currentMaxFfts[i], halfFfts[i]);
+            halfFfts[i] = ((_lastFfts[i] * 0.85f) + halfFfts[i]) / 2;
+            
+        });
 
-        //var smoothedFfts = SmoothBands(hearableFfts, 0, 0);
-
-        //average with last ffts * 0.8
-        for (var i = 0; i < hearableFfts.Length; i++)
-        {
-            hearableFfts[i] = ((_lastFfts[i] * 0.8f) + hearableFfts[i]) / 2;
-        }
-
-        //set last ffts
-        _lastFfts = hearableFfts;
-
-        TrackFftsRendered?.Invoke(this, new TrackFftsRenderedEventArgs(hearableFfts, _currentMaxFfts));
+        var copy = new float[halfFfts.Length];
+        Array.Copy(halfFfts, copy, halfFfts.Length);
+        _lastFfts = copy;
+        TrackFftsRendered?.Invoke(this, new TrackFftsRenderedEventArgs(copy, _currentMaxFfts));
     }
 
     public void Pause()

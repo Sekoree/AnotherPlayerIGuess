@@ -1,0 +1,16 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:APIG2"
+             x:Class="APIG2.App">
+    <!--<Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>-->
+
+    <Application.Styles>
+        <FluentTheme Mode="Dark"/>
+        <StyleInclude Source="avares://APIG2/Controls/MediaControlsControl.axaml"/>
+        <StyleInclude Source="avares://APIG2/Controls/MediaInfoControl.axaml"/>
+        <StyleInclude Source="avares://APIG2/Controls/PlaylistItemControl.axaml"/>
+        <StyleInclude Source="avares://APIG2/Controls/SearchResultItemControl.axaml"/>
+    </Application.Styles>
+</Application>

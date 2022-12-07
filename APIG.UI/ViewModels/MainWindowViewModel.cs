@@ -22,7 +22,7 @@ namespace APIG.UI.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private readonly YoutubeClient _client = new();
-    private readonly MediaPlayer _player = new();
+    private readonly MediaPlayer _player;
     private readonly Random _random = new();
 
     #region Debug
@@ -86,6 +86,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
+        _player = new MediaPlayer(this);
         _player.TrackLoaded += (_, args) =>
         {
             Dispatcher.UIThread.Post(() => CurrentMedia = args.Track);

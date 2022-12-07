@@ -4,23 +4,23 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace APIG.UI.Controls;
+namespace APIG2.Controls;
 
 public class VisualizerControl : Control
 {
-    public static readonly StyledProperty<float[]> CurrentFFTsProperty = AvaloniaProperty.Register<VisualizerControl, float[]>(
-        nameof(CurrentFFTs), new float[4096]);
+    public static readonly StyledProperty<float[]?> CurrentFftsProperty = AvaloniaProperty.Register<VisualizerControl, float[]?>(
+        nameof(CurrentFfts));
 
-    public float[] CurrentFFTs
+    public float[]? CurrentFfts
     {
-        get => GetValue(CurrentFFTsProperty);
-        set => SetValue(CurrentFFTsProperty, value);
+        get => GetValue(CurrentFftsProperty);
+        set => SetValue(CurrentFftsProperty, value);
     }
 
-    public static readonly StyledProperty<float[]> CurrentMaxProperty = AvaloniaProperty.Register<VisualizerControl, float[]>(
-        nameof(CurrentMax), new float[4096]);
+    public static readonly StyledProperty<float[]?> CurrentMaxProperty = AvaloniaProperty.Register<VisualizerControl, float[]?>(
+        nameof(CurrentMax));
 
-    public float[] CurrentMax
+    public float[]? CurrentMax
     {
         get => GetValue(CurrentMaxProperty);
         set => SetValue(CurrentMaxProperty, value);
@@ -28,8 +28,7 @@ public class VisualizerControl : Control
     
     static VisualizerControl()
     {
-        AffectsRender<VisualizerControl>(CurrentFFTsProperty);
-        //AffectsRender<VisualizerControl>(CurrentMaxProperty);
+        AffectsRender<VisualizerControl>(CurrentFftsProperty);
     }
 
     public VisualizerControl()
@@ -38,10 +37,10 @@ public class VisualizerControl : Control
 
     public override void Render(DrawingContext context)
     {
-        if (!IsVisible)
+        if (!IsVisible || CurrentFfts == null || CurrentMax == null || CurrentFfts.Length != CurrentMax.Length)
             return;
         //draw all ffts respectively to the max and the bounds using StreamGeometry, with rounded corners
-        var fftsToUse = CurrentFFTs;
+        var fftsToUse = CurrentFfts;
         var maxToUse = CurrentMax;
 
         if (Bounds.Width < fftsToUse.Length)

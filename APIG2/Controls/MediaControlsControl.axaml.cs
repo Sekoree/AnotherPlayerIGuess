@@ -4,7 +4,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls.Primitives;
 
-namespace APIG.UI.Controls;
+namespace APIG2.Controls;
 
 public class MediaControlsControl : TemplatedControl
 {
